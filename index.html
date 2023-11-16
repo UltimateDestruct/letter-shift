@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js"></script>
+    </head>
+    <body>
+        <div x-data="{
+            numHops:3,
+            firstWord:'far',
+            lastWord: 'ten',
+            <!-- wordList:['bat','cap','far','fan','gut','hat','let','net','now','nut','par','pan','pat','rap','sap','tan','tap','ten'], -->
+            usedWordList: [],
+        }">
+            <div>
+                Number of Hops: <span x-text="numHops"></span> 
+                <button @click="numHops++">+</button>
+                <button @click="numHops--">-</button>
+            </div>
+
+            <div id="topWord">
+                <input type="text" x-model="firstWord">
+            </div>
+
+            <template x-for="i in numHops">
+                <div>
+                <input>
+                    
+                </div>
+            </template>
+
+            <div id="bottomWord">
+                <input type="text" x-model="lastWord">
+            </div>
+
+            <div>
+                <button @click="wordPath(firstWord, lastWord, wordList)">Calculate</button>
+            </div>
+        </div>
+
+        <!-- Letter progression:
+            far
+            fan
+            pan //unnecessary step...
+            tan
+            ten  
+        -->
+
+        <!-- Test for bugs:
+            - Start and end don't have same # of letters
+            - No solution found
+            - Start word matches end word
+        -->
+
+        <script>
+            let wordLevel = []
+            let wordList = ['bat','cap','far','fan','gut','hat','let','net','now','nut','par','pan','pat','rap','sap','tan','tap','ten']
+
+            function wordPath(firstWord, lastWord, wordList, usedWordList) {
+
+                wordList.splice(wordList.indexOf(firstWord), 1);
+
+                filteredList = filterList(firstWord, wordList)
+                tempWordList = filteredList;
+
+                wordLevel.push(tempWordList)
+                console.log("WordList: ", wordList)
+                console.log("WordLevel: ", wordLevel)
+                debugger
+
+
+                if(tempWordList.length === 0) {
+                    console.log("No results found")
+                } else if (firstWord === lastWord) {
+                    console.log("Solution found!!!")
+                } else {
+                    let newfirstWord = tempWordList[0]
+                    wordPath(newfirstWord, lastWord, wordList, usedWordList)
+                }
+            }
+
+            function filterList(word, wordList) {
+                // Remove the current word
+                const wordListMinusCurrent = wordList.filter(removeCurrent => removeCurrent !== word)
+
+                let splitWord = word.split("")
+                let filteredList = []
+
+                // To filter the list down, check if it has 2 of the 3 letters in the correct positions
+                wordListMinusCurrent.forEach(item => {
+                    let matches = 0
+
+                    for(x=0;x<word.length;x++) {
+                        if(item.charAt(x) === splitWord[x]) {
+                            matches++
+                        }
+                    }
+
+                    if(matches >= 2) {
+                        filteredList.push(item)
+                    }
+                });
+
+                return filteredList
+            }
+        </script>
+    </body>
+</html>
